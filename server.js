@@ -1,7 +1,5 @@
 // Dependencies
 // =============================================================
-const { response } = require('express');
-const e = require('express');
 const express = require('express');
 const { readFile,writeFile } = require('fs');
 
@@ -28,15 +26,41 @@ router.use('/api',  function (req, res, next) {
 
   next();
 });
-router.get('/api/notes' , function( req, res) {
+router.get('/api/notes' , function( req, res, next ) {
   //res.sendFile(path.join(apiDir, 'db.json'))
   let dbPath = path.join(apiDir,'db.json')
   res.sendFile(dbPath)
   //next()
-
  // });
-  
 })
+
+router.get('/api/notes/:id' , function( req, res) {
+  const chosen = req.params.id;
+
+  console.log(chosen);
+
+  let dbPath = path.join(apiDir,'db.json');
+  readFile(dbPath,'utf8', (err, data) => {
+    if (err) throw err;
+    const notes = JSON.parse(data)
+    console.log(notes)
+    
+    for (let i = 0; i < notes.length; i++) {
+      console.log(notes[i].id);
+      if (chosen === notes[i].id) {
+        res.json(notes[i]);
+      }
+    }
+  })
+  
+
+  //res.sendFile(path.join(apiDir, 'db.json'))
+  //let dbPath = path.join(apiDir,'db.json')
+  //res.sendFile(dbPath)
+  //next()
+ // });
+})
+
 router.post('/api/notes' , 
   function( req, res, next) {
   const newNote = req.body;
@@ -52,12 +76,13 @@ router.post('/api/notes' ,
       console.log(noteData);
       noteDataStr = JSON.stringify(noteData)
       
-      writeFile(dbPath, noteDataStr, 'utf8', (err) => {
+      writeFile(dbPath, noteData, 'utf8', (err) => {
         if (err) throw err;
         console.log('The file has been saved!');
         res.json(noteData)
       });
     })
+  next();
     
   // readFile('/db.json', (response) => {
   //   console.log(response)
