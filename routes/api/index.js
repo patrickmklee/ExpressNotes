@@ -25,8 +25,8 @@ router.post('/notes' , (req, res) => {
   const response = {
     "notes": JSON.parse(readData)
   }
-  
-  req.body.id = response.notes.length.toString();
+
+  // req.body.id = response.notes.length.toString();
   const newNote = createNote(req.body, response.notes);
   res.json(newNote);
 });
